@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { PrintfulClient } from "@/lib/printful";
 import { generateDesign } from "@/lib/generator";
-import { db } from "@/lib/firebase"; // Assuming we save to our DB too
+import { db } from "@/lib/firebase";
 import { collection, addDoc } from "firebase/firestore";
+
+export const dynamic = 'force-dynamic';
 
 export async function POST(req: Request) {
   try {

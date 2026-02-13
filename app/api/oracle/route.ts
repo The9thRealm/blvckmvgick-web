@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const dynamic = 'force-dynamic';
+
 // This is a placeholder for the actual AI integration
 // You can later connect this to Vertex AI or OpenAI
 export async function POST(req: Request) {
