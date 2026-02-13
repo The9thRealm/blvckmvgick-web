@@ -27,14 +27,16 @@ export async function POST(req: Request) {
     await printful.createVariant(product.id, file.id, 4011);
 
     // 6. Save to our local database
-    await addDoc(collection(db, "products"), {
-      name: product.name,
-      printfulId: product.id,
-      image: designUrl,
-      category: "Generated",
-      price: 85.00,
-      createdAt: new Date(),
-    });
+    if (db) {
+      await addDoc(collection(db, "products"), {
+        name: product.name,
+        printfulId: product.id,
+        image: designUrl,
+        category: "Generated",
+        price: 85.00,
+        createdAt: new Date(),
+      });
+    }
 
     return NextResponse.json({ success: true, product });
 
