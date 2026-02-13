@@ -144,9 +144,9 @@ export default function Home() {
               <Link href="/oracle" className="hover:text-crimson transition-colors">Oracle</Link>
             </div>
             <div className="space-y-4 flex flex-col">
-              <span className="text-white/60 mb-2 font-bold">Syndicate</span>
-              <Link href="https://ninjaloc.com" target="_blank" className="hover:text-crimson transition-colors">NinjaLOC</Link>
-              <Link href="https://instagram.com/ninjaloc" target="_blank" className="hover:text-crimson transition-colors">Instagram</Link>
+              <span className="text-white/60 mb-2 font-bold">Social</span>
+              <Link href="#" target="_blank" className="hover:text-crimson transition-colors">Instagram</Link>
+              <Link href="#" target="_blank" className="hover:text-crimson transition-colors">X / Twitter</Link>
             </div>
           </div>
 

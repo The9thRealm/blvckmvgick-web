@@ -1,20 +1,22 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+
+import { useState, useRef, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Sparkles, Loader2 } from "lucide-react";
+import { Terminal, Send, Cpu } from "lucide-react";
 
 interface Message {
-  role: "user" | "oracle";
-  content: string;
+  id: number;
+  role: "system" | "oracle" | "user";
+  text: string;
 }
 
-export default function OraclePage() {
-  const [messages, setMessages] = useState<Message[]>([
-    { role: "oracle", content: "I am the weaver of the void. What knowledge do you seek regarding the manifestations of BLVCKMVGICK?" }
-  ]);
+export default function Oracle() {
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([
+    { id: 1, role: "system", text: "CONNECTION ESTABLISHED. PROTOCOL: LUXURY_VOID_V1" },
+    { id: 2, role: "oracle", text: "I am the Oracle. I curate the shadows. Tell me what you seek, or how you wish to be perceived in the darkness." }
+  ]);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -23,93 +25,89 @@ export default function OraclePage() {
     }
   }, [messages]);
 
-  const handleSend = async () => {
-    if (!input.trim() || loading) return;
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!input.trim()) return;
 
-    const userMsg = input.trim();
+    const userMsg: Message = { id: Date.now(), role: "user", text: input };
+    setMessages(prev => [...prev, userMsg]);
     setInput("");
-    setMessages(prev => [...prev, { role: "user", content: userMsg }]);
-    setLoading(true);
 
-    try {
-      const res = await fetch("/api/oracle", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMsg, history: messages }),
-      });
-      const data = await res.json();
-      setMessages(prev => [...prev, { role: "oracle", content: data.response }]);
-    } catch (err) {
-      setMessages(prev => [...prev, { role: "oracle", content: "The connection to the abyss is unstable. Try again soon." }]);
-    } finally {
-      setLoading(false);
-    }
+    // Mock AI Response
+    setTimeout(() => {
+      const responses = [
+        "The void acknowledges your request. Processing...",
+        "Calculated. For that purpose, I recommend the 'Obsidian Shell' jacket.",
+        "Your aesthetic aligns with the Sequence 001 drop. Proceed with caution.",
+        "Darkness suits you. Let me retrieve the artifacts."
+      ];
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      
+      setMessages(prev => [...prev, { id: Date.now() + 1, role: "oracle", text: randomResponse }]);
+    }, 1500);
   };
 
   return (
-    <main className="min-h-screen bg-black text-white flex flex-col">
+    <main className="min-h-screen bg-void flex flex-col">
       <Navbar />
       
-      <div className="flex-1 max-w-3xl mx-auto w-full px-6 pt-32 pb-40 flex flex-col">
-        <header className="text-center mb-12">
-          <motion.div 
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 4, repeat: Infinity }}
-            className="inline-block p-4 rounded-full bg-white/5 border border-white/10 mb-4"
-          >
-            <Sparkles size={24} className="text-white/40" />
-          </motion.div>
-          <h1 className="text-2xl font-black uppercase tracking-[0.5em]">The Oracle</h1>
-          <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-2">AI CURATOR // VOID LOGIC v1.0</p>
-        </header>
-
-        <div 
-          ref={scrollRef}
-          className="flex-1 space-y-8 overflow-y-auto no-scrollbar pb-12"
-        >
-          <AnimatePresence>
-            {messages.map((msg, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-              >
-                <div className={`max-w-[80%] p-6 rounded-sm text-sm leading-relaxed ${
-                  msg.role === "user" 
-                    ? "bg-white/5 border border-white/10 text-white" 
-                    : "bg-transparent text-gray-400 italic font-light"
-                }`}>
-                  {msg.role === "oracle" && <span className="block text-[8px] uppercase font-bold tracking-[0.3em] mb-2 text-white/20">Oracle Response</span>}
-                  {msg.content}
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          {loading && (
-            <div className="flex justify-start">
-              <Loader2 size={16} className="animate-spin text-gray-600" />
+      <div className="flex-1 pt-24 px-4 pb-4 flex flex-col max-w-5xl mx-auto w-full">
+        {/* Terminal Window */}
+        <div className="flex-1 border border-white/10 bg-black/50 backdrop-blur-sm relative overflow-hidden flex flex-col">
+          {/* Header */}
+          <div className="h-10 border-b border-white/10 bg-white/5 flex items-center px-4 justify-between">
+            <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-widest text-crimson">
+              <Cpu size={12} className="animate-pulse" />
+              <span>Oracle Mainframe</span>
             </div>
-          )}
-        </div>
-      </div>
+            <div className="flex gap-2">
+              <div className="w-2 h-2 rounded-full bg-white/10" />
+              <div className="w-2 h-2 rounded-full bg-white/10" />
+            </div>
+          </div>
 
-      <div className="fixed bottom-0 left-0 w-full bg-gradient-to-t from-black via-black to-transparent pt-20 pb-12 px-6">
-        <div className="max-w-3xl mx-auto relative">
-          <input 
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
-            placeholder="Speak to the void..."
-            className="w-full bg-white/5 border border-white/10 p-5 pr-16 text-sm focus:border-white/40 outline-none transition-all placeholder:text-gray-700 uppercase tracking-widest"
-          />
-          <button 
-            onClick={handleSend}
-            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 hover:text-white text-gray-500 transition"
-          >
-            <Send size={20} />
-          </button>
+          {/* Chat Area */}
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 font-mono text-xs md:text-sm scrollbar-hide">
+            <AnimatePresence>
+              {messages.map((msg) => (
+                <motion.div 
+                  key={msg.id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div className={`max-w-[80%] p-4 border ${
+                    msg.role === "user" 
+                      ? "border-white/20 bg-white/5 text-white" 
+                      : msg.role === "system"
+                      ? "border-transparent text-crimson/50 text-[10px] tracking-widest"
+                      : "border-crimson/30 bg-crimson/5 text-crimson"
+                  }`}>
+                    {msg.role !== "user" && <span className="block text-[8px] uppercase tracking-widest opacity-50 mb-2">[{msg.role}]</span>}
+                    <p className="leading-relaxed">{msg.text}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Input Area */}
+          <form onSubmit={handleSend} className="p-4 border-t border-white/10 bg-void flex gap-4">
+            <div className="flex items-center text-crimson animate-pulse">
+              <Terminal size={18} />
+            </div>
+            <input 
+              type="text" 
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              className="flex-1 bg-transparent border-none outline-none text-white font-mono placeholder:text-white/20"
+              placeholder="ENTER COMMAND..."
+              autoFocus
+            />
+            <button type="submit" className="text-white/40 hover:text-white transition-colors">
+              <Send size={18} />
+            </button>
+          </form>
         </div>
       </div>
     </main>

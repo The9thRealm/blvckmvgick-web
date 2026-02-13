@@ -22,9 +22,6 @@ export default function Navbar() {
             <Link href="/collections" className="hover:text-white transition-colors">Collections</Link>
             <Link href="/shop" className="hover:text-white transition-colors">Archive</Link>
             <Link href="/oracle" className="hover:text-crimson transition-colors text-crimson/60 animate-pulse-slow">The Oracle</Link>
-            <Link href="https://ninjaloc.com" target="_blank" className="hover:text-white transition-colors flex items-center gap-2 border-l border-white/10 pl-10">
-              NinjaLOC <ExternalLink size={10} />
-            </Link>
           </div>
         </div>
 

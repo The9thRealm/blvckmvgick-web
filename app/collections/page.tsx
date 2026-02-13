@@ -1,69 +1,87 @@
 "use client";
+
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
-import Link from "next/link";
 
 const collections = [
   {
-    title: "V01D // RITUAL",
-    description: "The foundation of our existence. Heavyweight essentials for the modern mystic.",
-    image: "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&q=80&w=1200",
-    slug: "void-ritual"
+    id: "001",
+    title: "Shadow Protocol",
+    season: "SS26",
+    description: "Utilitarian armor for the urban phantom.",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=1000"
   },
   {
-    title: "NEO-STITCH",
-    description: "Technical utility meets occult aesthetics. Functional armor for urban environments.",
-    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=1200",
-    slug: "neo-stitch"
+    id: "002",
+    title: "Voidwalker",
+    season: "FW25",
+    description: "Heavyweight fabrics woven from the abyss.",
+    image: "https://images.unsplash.com/photo-1506157786151-b8491531f063?auto=format&fit=crop&q=80&w=1000"
   }
 ];
 
-export default function CollectionsPage() {
+export default function Collections() {
   return (
-    <main className="min-h-screen bg-black">
+    <main className="min-h-screen bg-void">
       <Navbar />
       
-      <div className="max-w-7xl mx-auto px-6 pt-32 pb-24">
-        <header className="mb-20">
-          <h1 className="text-5xl font-black uppercase tracking-tighter">Collections</h1>
-          <p className="text-gray-500 text-xs uppercase tracking-[0.5em] mt-2">Chapter by chapter, we define the void</p>
-        </header>
+      <div className="pt-32 pb-20 px-6 max-w-[1800px] mx-auto">
+        <h1 className="text-[10vw] font-black uppercase leading-none tracking-tighter text-white/5 mb-24 select-none">
+          Archives
+        </h1>
 
         <div className="space-y-32">
-          {collections.map((col, i) => (
-            <motion.section 
-              key={col.slug}
-              initial={{ opacity: 0, y: 40 }}
+          {collections.map((col, idx) => (
+            <motion.div 
+              key={col.id}
+              initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className={`flex flex-col ${i % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"} gap-12 lg:gap-24 items-center`}
+              transition={{ duration: 1 }}
+              className={`flex flex-col md:flex-row gap-12 items-center ${idx % 2 === 1 ? "md:flex-row-reverse" : ""}`}
             >
-              <div className="flex-1 aspect-[16/9] w-full overflow-hidden bg-accent">
+              <div className="flex-1 w-full aspect-[4/5] relative overflow-hidden group">
+                <div className="absolute inset-0 bg-crimson/20 mix-blend-overlay opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10" />
                 <img 
                   src={col.image} 
                   alt={col.title}
-                  className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
+                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-[1.5s] scale-100 group-hover:scale-110"
                 />
+                
+                {/* Overlay Info */}
+                <div className="absolute bottom-0 left-0 p-8 z-20">
+                  <span className="text-[10px] font-mono tracking-[0.5em] uppercase bg-black/50 backdrop-blur-md px-4 py-2 text-white">
+                    Look {col.id}
+                  </span>
+                </div>
               </div>
-              <div className="flex-1 max-w-md">
-                <h2 className="text-4xl font-bold uppercase tracking-tighter mb-6">{col.title}</h2>
-                <p className="text-gray-400 leading-relaxed mb-8 uppercase text-xs tracking-widest font-light">
-                  {col.description}
-                </p>
-                <Link href={`/shop?collection=${col.slug}`}>
-                  <button className="px-10 py-4 border border-white/20 hover:bg-white hover:text-black transition-all text-[10px] font-bold uppercase tracking-widest">
-                    Explore Chapter
-                  </button>
-                </Link>
+
+              <div className="flex-1 space-y-8 p-8">
+                <div className="space-y-2">
+                  <span className="text-crimson font-mono text-xs tracking-[0.5em] uppercase">
+                    Sequence {col.id}
+                  </span>
+                  <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tight text-white/90">
+                    {col.title}
+                  </h2>
+                </div>
+                <div className="w-24 h-px bg-white/20" />
+                <div className="space-y-4 max-w-md">
+                  <p className="text-xl font-light text-white/60">
+                    {col.description}
+                  </p>
+                  <p className="text-xs font-mono uppercase tracking-widest text-white/30">
+                    Season: {col.season} // Status: Archived
+                  </p>
+                </div>
+                <button className="px-12 py-4 border border-white/10 hover:bg-white hover:text-black transition-all duration-500 uppercase tracking-[0.3em] text-[10px] font-bold">
+                  View Drop
+                </button>
               </div>
-            </motion.section>
+            </motion.div>
           ))}
         </div>
       </div>
-
-      <footer className="py-20 border-t border-white/10 text-center text-[10px] uppercase tracking-[0.3em] text-gray-600">
-        &copy; 2026 BLVCKMVGICK. All rights reserved. Designed for the abyss.
-      </footer>
     </main>
   );
 }
