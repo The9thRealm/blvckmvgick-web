@@ -3,81 +3,86 @@ import { products } from "@/data/products";
 import Navbar from "@/components/Navbar";
 import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
-import { ShoppingBag, ChevronRight, Info } from "lucide-react";
+import { ChevronRight, Info, Ghost } from "lucide-react";
 import { useState } from "react";
-import { useCart } from "@/context/CartContext";
+import Link from "next/link";
 
 export default function ProductPage() {
   const params = useParams();
   const id = params?.id;
   const product = products.find((p) => p.id === id);
   const [selectedSize, setSelectedSize] = useState("L");
-  const { addToCart } = useCart();
   const [isAdding, setIsAdding] = useState(false);
 
   if (!product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
-        <h1 className="text-xl font-bold uppercase tracking-widest">Product Not Found</h1>
+      <div className="min-h-screen flex items-center justify-center bg-void text-bone">
+        <h1 className="text-xl font-bold uppercase tracking-widest">Relic Not Found</h1>
       </div>
     );
   }
 
-  const handleAddToCart = () => {
+  const handleAcquire = () => {
     setIsAdding(true);
-    addToCart(product, selectedSize);
-    setTimeout(() => setIsAdding(false), 1000);
+    setTimeout(() => setIsAdding(false), 1500);
   };
 
   return (
-    <main className="min-h-screen bg-black">
+    <main className="min-h-screen bg-void selection:bg-crimson selection:text-white">
       <Navbar />
       
-      <div className="max-w-7xl mx-auto px-6 pt-32 pb-24">
-        <div className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-gray-500 mb-12">
-          <span>Home</span> <ChevronRight size={10} /> 
-          <span>Shop</span> <ChevronRight size={10} /> 
-          <span className="text-white">{product.name}</span>
+      <div className="max-w-[1800px] mx-auto px-6 pt-32 pb-24">
+        <div className="flex items-center gap-4 text-[9px] font-mono uppercase tracking-[0.4em] text-white/20 mb-16">
+          <Link href="/" className="hover:text-white transition-colors">Manifest</Link> 
+          <ChevronRight size={10} /> 
+          <Link href="/shop" className="hover:text-white transition-colors">Archive</Link> 
+          <ChevronRight size={10} /> 
+          <span className="text-crimson/60">{product.name}</span>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          {/* Image Gallery */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
+          {/* Cinematic Image Gallery */}
           <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="aspect-[3/4] bg-accent overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="aspect-[3/4] bg-shadow/40 horror-border overflow-hidden relative group"
           >
             <img 
               src={product.image} 
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-[2s] scale-105"
             />
+            <div className="absolute inset-0 bg-void/20" />
           </motion.div>
 
-          {/* Product Info */}
+          {/* Product Dossier */}
           <motion.div 
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            className="flex flex-col"
+            className="flex flex-col space-y-12"
           >
-            <div className="mb-8">
-              <p className="text-xs text-gray-500 uppercase tracking-[0.4em] mb-2">{product.category}</p>
-              <h1 className="text-4xl font-black uppercase tracking-tighter mb-4">{product.name}</h1>
-              <p className="text-2xl font-bold">${product.price}</p>
+            <div className="space-y-4">
+              <span className="text-xs font-mono text-crimson uppercase tracking-[0.5em] italic">
+                Sequence RELIC-{product.id}
+              </span>
+              <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none">
+                {product.name}
+              </h1>
+              <p className="text-3xl font-light text-white/40 font-mono">${product.price}</p>
             </div>
 
-            <div className="prose prose-invert mb-12">
-              <p className="text-gray-400 leading-relaxed text-sm">
-                {product.description}
+            <div className="prose prose-invert border-l border-white/10 pl-8">
+              <p className="text-white/60 leading-relaxed text-lg italic">
+                "{product.description}"
               </p>
             </div>
 
             {/* Size Selection */}
-            <div className="mb-12">
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-xs font-bold uppercase tracking-widest">Select Size</span>
-                <button className="text-[10px] uppercase tracking-widest text-gray-500 flex items-center gap-1">
-                  <Info size={12} /> Size Guide
+            <div className="space-y-6">
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] font-bold font-mono uppercase tracking-[0.3em] text-white/40">Select Tier</span>
+                <button className="text-[9px] uppercase tracking-widest text-white/20 flex items-center gap-2 hover:text-white transition-colors">
+                  <Info size={12} /> Dimension Guide
                 </button>
               </div>
               <div className="flex gap-4">
@@ -85,10 +90,10 @@ export default function ProductPage() {
                   <button 
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`w-12 h-12 flex items-center justify-center text-xs font-bold border transition-all ${
+                    className={`w-14 h-14 flex items-center justify-center text-xs font-mono font-bold border transition-all duration-500 ${
                       selectedSize === size 
-                        ? "bg-white text-black border-white" 
-                        : "border-white/20 text-white hover:border-white"
+                        ? "bg-bone text-void border-bone" 
+                        : "border-white/10 text-white/40 hover:border-crimson hover:text-white"
                     }`}
                   >
                     {size}
@@ -98,34 +103,29 @@ export default function ProductPage() {
             </div>
 
             <button 
-              onClick={handleAddToCart}
+              onClick={handleAcquire}
               disabled={isAdding}
-              className={`w-full py-5 text-xs font-black uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-4 ${
-                isAdding ? "bg-green-500 text-white" : "bg-white text-black hover:bg-gray-200"
+              className={`w-full py-6 text-[10px] font-black uppercase tracking-[0.5em] transition-all duration-700 flex items-center justify-center gap-4 relative overflow-hidden group ${
+                isAdding ? "bg-crimson text-white" : "bg-white text-void hover:bg-crimson hover:text-white"
               }`}
             >
-              {isAdding ? "Added to Sanctuary" : <><ShoppingBag size={18} /> Add to Sanctuary</>}
+              <span className="relative z-10">
+                {isAdding ? "RESERVING..." : "Acquire Relic"}
+              </span>
+              {!isAdding && <Ghost size={16} className="relative z-10 opacity-0 group-hover:opacity-100 transition-opacity" />}
             </button>
 
-            <div className="mt-12 space-y-4 pt-12 border-t border-white/5">
-              <details className="group">
-                <summary className="list-none flex justify-between items-center cursor-pointer text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition">
-                  Shipping & Returns
-                  <span className="text-lg group-open:rotate-45 transition-transform">+</span>
-                </summary>
-                <p className="mt-4 text-xs text-gray-500 leading-loose uppercase tracking-wider">
-                  Ships worldwide within 5-7 business days. Returns accepted within 14 days of delivery.
-                </p>
-              </details>
-              <details className="group">
-                <summary className="list-none flex justify-between items-center cursor-pointer text-[10px] font-bold uppercase tracking-widest text-gray-400 hover:text-white transition">
-                  Fabric & Care
-                  <span className="text-lg group-open:rotate-45 transition-transform">+</span>
-                </summary>
-                <p className="mt-4 text-xs text-gray-500 leading-loose uppercase tracking-wider">
-                  Hand wash cold. Do not tumble dry. Iron inside out. Designed for longevity.
-                </p>
-              </details>
+            <div className="pt-12 border-t border-white/5 space-y-8">
+               <div className="flex items-center gap-4 group cursor-help">
+                  <div className="w-2 h-2 bg-crimson animate-pulse rounded-full" />
+                  <span className="text-[10px] font-mono uppercase tracking-[0.3em] text-white/30 group-hover:text-white transition-colors">
+                    Fulfillment Status: Operational
+                  </span>
+               </div>
+               <p className="text-[10px] font-mono leading-loose text-white/20 uppercase tracking-widest">
+                 Designed for the Abyss. Ships globally from redacted locations. <br />
+                 All transactions are final. No return from the void.
+               </p>
             </div>
           </motion.div>
         </div>
