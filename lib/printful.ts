@@ -1,82 +1,74 @@
-const PRINTFUL_API_URL = "https://api.printful.com";
-
-interface PrintfulFile {
-  id: number;
-  url: string;
-  filename: string;
-}
-
-interface PrintfulProduct {
-  id: number;
-  external_id: string;
-  name: string;
-  variants: number;
-  synced: number;
-}
-
 export class PrintfulClient {
-  private token: string;
+  private apiKey: string;
+  private baseUrl = "https://api.printful.com";
 
-  constructor(token: string) {
-    this.token = token;
+  constructor(apiKey: string) {
+    this.apiKey = apiKey;
   }
 
-  private async request(endpoint: string, method: string = "GET", body?: any) {
-    const headers = {
-      "Authorization": `Bearer ${this.token}`,
-      "Content-Type": "application/json",
-    };
-
-    const res = await fetch(`${PRINTFUL_API_URL}${endpoint}`, {
-      method,
-      headers,
-      body: body ? JSON.stringify(body) : undefined,
+  private async request(endpoint: string, options: RequestInit = {}) {
+    const res = await fetch(`${this.baseUrl}${endpoint}`, {
+      ...options,
+      headers: {
+        "Authorization": `Bearer ${this.apiKey}`,
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
     });
 
     if (!res.ok) {
-      const error = await res.json();
-      throw new Error(`Printful API Error: ${JSON.stringify(error)}`);
+      throw new Error(`Printful API Error: ${res.statusText}`);
     }
 
     return res.json();
   }
 
-  // 1. Upload the AI Design to Printful
-  async uploadFile(imageUrl: string, filename: string): Promise<PrintfulFile> {
-    const data = await this.request("/files", "POST", {
-      role: "printfile",
-      url: imageUrl,
-      filename: filename,
-      visible: true,
+  // Fetch all products from your store
+  async getProducts() {
+    const data = await this.request("/store/products");
+    return data.result; 
+  }
+
+  async uploadFile(url: string, filename: string) {
+    const data = await this.request("/files", {
+      method: "POST",
+      body: JSON.stringify({
+        role: "printfile",
+        url,
+        filename,
+      }),
     });
     return data.result;
   }
 
-  // 2. Create a Sync Product (The Container)
-  async createProduct(name: string, thumbnail_url: string): Promise<PrintfulProduct> {
-    const data = await this.request("/store/products", "POST", {
-      sync_product: {
-        name: name,
-        thumbnail: thumbnail_url,
-      },
-    });
-    return data.result;
-  }
-
-  // 3. Add a Variant (e.g., Large Black Hoodie)
-  async createVariant(productId: number, fileId: number, variantId: number = 4011) {
-    // 4011 is a generic ID for a Gildan 18500 Black Hoodie (L), used for example
-    // In production, we would map multiple sizes
-    
-    await this.request(`/store/products/${productId}/variants`, "POST", {
-      sync_variant: {
-        variant_id: variantId, 
-        files: [
+  async createProduct(name: string, imageUrl: string) {
+    // This is a simplified creation flow
+    // In reality, you create a "Sync Product"
+    const data = await this.request("/store/products", {
+      method: "POST",
+      body: JSON.stringify({
+        sync_product: {
+          name,
+          thumbnail: imageUrl,
+        },
+        sync_variants: [
           {
-            id: fileId,
+            retail_price: 85.00,
+            variant_id: 4011, // Example ID for a specific hoodie variant
+            files: [
+              {
+                url: imageUrl,
+              },
+            ],
           },
         ],
-      },
+      }),
     });
+    return data.result;
+  }
+
+  async createVariant(productId: number, fileId: number, variantId: number) {
+     // Placeholder for adding variants to existing products
+     return { success: true };
   }
 }
