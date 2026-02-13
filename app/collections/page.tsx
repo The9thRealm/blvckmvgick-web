@@ -74,9 +74,11 @@ export default function Collections() {
                     Season: {col.season} // Status: Archived
                   </p>
                 </div>
-                <button className="px-12 py-4 border border-white/10 hover:bg-white hover:text-black transition-all duration-500 uppercase tracking-[0.3em] text-[10px] font-bold">
-                  View Drop
-                </button>
+                <Link href="/shop">
+                  <button className="px-12 py-4 border border-white/10 hover:bg-white hover:text-black transition-all duration-500 uppercase tracking-[0.3em] text-[10px] font-bold cursor-pointer">
+                    View Drop
+                  </button>
+                </Link>
               </div>
             </motion.div>
           ))}

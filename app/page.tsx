@@ -49,7 +49,7 @@ export default function Home() {
             className="mt-12 flex flex-col md:flex-row items-center justify-center gap-12"
           >
             <Link href="/shop">
-              <button className="px-16 py-5 bg-bone text-void text-[10px] font-black uppercase tracking-[0.4em] hover:bg-crimson hover:text-white transition-all duration-700">
+              <button className="px-16 py-5 bg-bone text-void text-[10px] font-black uppercase tracking-[0.4em] hover:bg-crimson hover:text-white transition-all duration-700 cursor-pointer">
                 Explore the Void
               </button>
             </Link>
