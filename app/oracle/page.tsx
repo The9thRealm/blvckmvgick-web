@@ -25,7 +25,7 @@ export default function Oracle() {
     }
   }, [messages]);
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
 
@@ -33,18 +33,38 @@ export default function Oracle() {
     setMessages(prev => [...prev, userMsg]);
     setInput("");
 
-    // Mock AI Response
-    setTimeout(() => {
-      const responses = [
-        "The void acknowledges your request. Processing...",
-        "Calculated. For that purpose, I recommend the 'Obsidian Shell' jacket.",
-        "Your aesthetic aligns with the Sequence 001 drop. Proceed with caution.",
-        "Darkness suits you. Let me retrieve the artifacts."
-      ];
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+    try {
+      const response = await fetch("/api/oracle", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          message: input,
+          history: messages
+            .filter(m => m.role !== "system")
+            .map(m => ({
+              role: m.role === "oracle" ? "model" : "user",
+              parts: [{ text: m.text }]
+            }))
+        }),
+      });
+
+      const data = await response.json();
       
-      setMessages(prev => [...prev, { id: Date.now() + 1, role: "oracle", text: randomResponse }]);
-    }, 1500);
+      if (data.error) throw new Error(data.error);
+
+      setMessages(prev => [...prev, { 
+        id: Date.now() + 1, 
+        role: "oracle", 
+        text: data.response 
+      }]);
+    } catch (err: any) {
+      console.error("Oracle Error:", err);
+      setMessages(prev => [...prev, { 
+        id: Date.now() + 1, 
+        role: "system", 
+        text: "ERROR: LINK_SEVERED. RETRY INITIATION." 
+      }]);
+    }
   };
 
   return (
